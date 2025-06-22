@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>やる気が出る名言メーカー</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: transparent;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+        }
+
+        .widget-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 15px 20px;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .widget-container:hover {
+            transform: translateY(-1px);
+        }
+
+        .quote-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            text-align: left;
+        }
+
+        .quote-text {
+            font-size: 16px;
+            line-height: 1.4;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 5px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .quote-author {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+            opacity: 0;
+            animation: fadeInUp 0.4s ease 0.1s forwards;
+        }
+
+        .refresh-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .refresh-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .refresh-button:active {
+            transform: translateY(0);
+        }
+
+        .refresh-icon {
+            transition: transform 0.5s ease;
+        }
+
+        .refresh-button.spinning .refresh-icon {
+            transform: rotate(360deg);
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .quote-marks {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-container">
+        <div class="quote-container">
+            <div id="quote-content">
+                <div class="quote-text" id="quote-text">
+                    成功への第一歩は、まず始めることだ
+                </div>
+                <div class="quote-author" id="quote-author">
+                    - ウォルト・ディズニー
+                </div>
+            </div>
+        </div>
+
+        <button class="refresh-button" id="refresh-btn">
+            <span class="refresh-icon">🔄</span>
+            更新
+        </button>
+    </div>
+
+    <script>
+        const quotes = [
+            {
+                text: "成功への第一歩は、まず始めることだ",
+                author: "ウォルト・ディズニー"
+            },
+            {
+                text: "今日という日は、残りの人生の最初の日である",
+                author: "アビー・ホフマン"
+            },
+            {
+                text: "行動を起こすのに最適な時は今である",
+                author: "マーク・トウェイン"
+            },
+            {
+                text: "夢を見ることができれば、それを実現することもできる",
+                author: "ウォルト・ディズニー"
+            },
+            {
+                text: "失敗は成功への踏み台である",
+                author: "デール・カーネギー"
+            },
+            {
+                text: "努力は必ず報われる。もし報われない努力があるとすれば、それはまだ努力と呼べない",
+                author: "王貞治"
+            },
+            {
+                text: "昨日から学び、今日を生き、明日に希望を持て",
+                author: "アルベルト・アインシュタイン"
+            },
+            {
+                text: "やってみせ、言って聞かせて、させてみせ、ほめてやらねば、人は動かじ",
+                author: "山本五十六"
+            },
+            {
+                text: "限界を作るのは他人ではない。いつも自分自身である",
+                author: "マイケル・ジョーダン"
+            },
+            {
+                text: "人生とは自分を見つけることではない。人生とは自分を創ることである",
+                author: "ジョージ・バーナード・ショー"
+            },
+            {
+                text: "チャンスは準備された心のみに宿る",
+                author: "ルイ・パスツール"
+            },
+            {
+                text: "人は負けたら終わりなのではない。やめたら終わりなのだ",
+                author: "リチャード・ニクソン"
+            },
+            {
+                text: "できると思うか、できないと思うか、それがすべてを決める",
+                author: "ヘンリー・フォード"
+            },
+            {
+                text: "今が人生で一番若い時だ",
+                author: "作者不詳"
+            },
+            {
+                text: "成功とは、失敗から失敗へと歩みながらも、情熱を失わないことである",
+                author: "ウィンストン・チャーチル"
+            },
+            {
+                text: "未来は今日始まる。明日ではない",
+                author: "ヨハネ・パウロ2世"
+            },
+            {
+                text: "小さなことからコツコツと",
+                author: "西川きよし"
+            },
+            {
+                text: "一歩一歩着実に歩めば、どんな山でも登ることができる",
+                author: "作者不詳"
+            },
+            {
+                text: "困難の中に、機会がある",
+                author: "アルベルト・アインシュタイン"
+            },
+            {
+                text: "自分の可能性を信じることから、すべてが始まる",
+                author: "作者不詳"
+            }
+        ];
+
+        let currentQuoteIndex = 0;
+
+        function createSparkles() {
+            const container = document.querySelector('.quote-container');
+            
+            for (let i = 0; i < 6; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 1.5 + 's';
+                container.appendChild(sparkle);
+
+                setTimeout(() => {
+                    sparkle.remove();
+                }, 2000);
+            }
+        }
+
+        function displayNewQuote() {
+            const button = document.getElementById('refresh-btn');
+            const quoteText = document.getElementById('quote-text');
+            const quoteAuthor = document.getElementById('quote-author');
+
+            // ボタンにスピン効果を追加
+            button.classList.add('spinning');
+
+            // フェードアウト
+            quoteText.style.opacity = '0';
+            quoteAuthor.style.opacity = '0';
+
+            setTimeout(() => {
+                // ランダムな名言を選択（現在の名言以外）
+                let newIndex;
+                do {
+                    newIndex = Math.floor(Math.random() * quotes.length);
+                } while (newIndex === currentQuoteIndex);
+                
+                currentQuoteIndex = newIndex;
+                const quote = quotes[currentQuoteIndex];
+
+                // 新しい名言を設定
+                quoteText.textContent = quote.text;
+                quoteAuthor.textContent = `- ${quote.author}`;
+
+                // フェードイン
+                quoteText.style.animation = 'none';
+                quoteAuthor.style.animation = 'none';
+                
+                setTimeout(() => {
+                    quoteText.style.animation = 'fadeInUp 0.6s ease forwards';
+                    quoteAuthor.style.animation = 'fadeInUp 0.6s ease 0.2s forwards';
+                    quoteText.style.opacity = '0';
+                    quoteAuthor.style.opacity = '0';
+                }, 10);
+
+                // スパークルエフェクトを追加
+                createSparkles();
+
+                // ボタンのスピン効果を削除
+                setTimeout(() => {
+                    button.classList.remove('spinning');
+                }, 500);
+            }, 300);
+        }
+
+        // ボタンクリックイベント
+        document.getElementById('refresh-btn').addEventListener('click', displayNewQuote);
+
+        // 初期表示時のエフェクト
+        window.addEventListener('load', () => {
+            createSparkles();
+        });
+    </script>
+</body>
+</html>
